@@ -3,7 +3,7 @@ package qub;
 /**
  * A measurement between two points.
  */
-public class Voltage implements ComparableWithError<Voltage>
+public class Voltage extends MeasurableValueBase<VoltageUnit, Voltage>
 {
     public static final Voltage zero = Voltage.volts(0);
 
@@ -27,105 +27,139 @@ public class Voltage implements ComparableWithError<Voltage>
         return new Voltage(value, VoltageUnit.Megavolts);
     }
 
-    private final double value;
-    private final VoltageUnit units;
+    public static Voltage create(double value, VoltageUnit units)
+    {
+        return new Voltage(value, units);
+    }
 
-    public Voltage(double value, VoltageUnit units)
+    private Voltage(double value, VoltageUnit units)
+    {
+        super(value, units, Voltage::create, VoltageUnit.Volts);
+    }
+
+    @Override
+    protected double getConversionMultiplier(VoltageUnit units)
     {
         PreCondition.assertNotNull(units, "units");
 
-        this.value = value;
-        this.units = units;
-    }
-
-    public double getValue()
-    {
-        return this.value;
-    }
-
-    public VoltageUnit getUnits()
-    {
-        return this.units;
-    }
-
-    public Voltage convertTo(VoltageUnit destinationUnits)
-    {
-        PreCondition.assertNotNull(destinationUnits, "destinationUnits");
-
-        Voltage result = this;
+        double result = 0;
 
         switch (this.getUnits())
         {
             case Millivolts:
-                switch (destinationUnits)
+            {
+                switch (units)
                 {
+                    case Millivolts:
+                        result = 1;
+                        break;
+
                     case Volts:
-                        result = new Voltage(this.getValue() * MetricScale.milliToUni, destinationUnits);
+                        result = MetricScale.milliToUni;
                         break;
 
                     case Kilovolts:
-                        result = new Voltage(this.getValue() * MetricScale.milliToKilo, destinationUnits);
+                        result = MetricScale.milliToKilo;
                         break;
 
                     case Megavolts:
-                        result = new Voltage(this.getValue() * MetricScale.milliToMega, destinationUnits);
+                        result = MetricScale.milliToMega;
+                        break;
+
+                    default:
+                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
-                break;
+            }
+            break;
 
             case Volts:
-                switch (destinationUnits)
+            {
+                switch (units)
                 {
                     case Millivolts:
-                        result = new Voltage(this.getValue() * MetricScale.uniToMilli, destinationUnits);
+                        result = MetricScale.uniToMilli;
+                        break;
+
+                    case Volts:
+                        result = 1;
                         break;
 
                     case Kilovolts:
-                        result = new Voltage(this.getValue() * MetricScale.uniToKilo, destinationUnits);
+                        result = MetricScale.uniToKilo;
                         break;
 
                     case Megavolts:
-                        result = new Voltage(this.getValue() * MetricScale.uniToMega, destinationUnits);
+                        result = MetricScale.uniToMega;
+                        break;
+
+                    default:
+                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
-                break;
+            }
+            break;
 
             case Kilovolts:
-                switch (destinationUnits)
+            {
+                switch (units)
                 {
                     case Millivolts:
-                        result = new Voltage(this.getValue() * MetricScale.kiloToMilli, destinationUnits);
+                        result = MetricScale.kiloToMilli;
                         break;
 
                     case Volts:
-                        result = new Voltage(this.getValue() * MetricScale.kiloToUni, destinationUnits);
-                        break;
-
-                    case Megavolts:
-                        result = new Voltage(this.getValue() * MetricScale.kiloToMega, destinationUnits);
-                        break;
-                }
-                break;
-
-            case Megavolts:
-                switch (destinationUnits)
-                {
-                    case Millivolts:
-                        result = new Voltage(this.getValue() * MetricScale.megaToMilli, destinationUnits);
-                        break;
-
-                    case Volts:
-                        result = new Voltage(this.getValue() * MetricScale.megaToUni, destinationUnits);
+                        result = MetricScale.kiloToUni;
                         break;
 
                     case Kilovolts:
-                        result = new Voltage(this.getValue() * MetricScale.megaToKilo, destinationUnits);
+                        result = 1;
+                        break;
+
+                    case Megavolts:
+                        result = MetricScale.kiloToMega;
+                        break;
+
+                    default:
+                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
+            }
+            break;
+
+            case Megavolts:
+            {
+                switch (units)
+                {
+                    case Millivolts:
+                        result = MetricScale.megaToMilli;
+                        break;
+
+                    case Volts:
+                        result = MetricScale.megaToUni;
+                        break;
+
+                    case Kilovolts:
+                        result = MetricScale.megaToKilo;
+                        break;
+
+                    case Megavolts:
+                        result = 1;
+                        break;
+
+                    default:
+                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
+                        break;
+                }
+            }
+            break;
+
+            default:
+                MeasurableValueBase.throwUnrecognizedUnitsException(this.getUnits());
                 break;
         }
 
-        PostCondition.assertNotNull(result, "result");
+        PostCondition.assertGreaterThan(result, 0, "result");
 
         return result;
     }
@@ -148,167 +182,5 @@ public class Voltage implements ComparableWithError<Voltage>
     public Voltage toMegavolts()
     {
         return this.convertTo(VoltageUnit.Megavolts);
-    }
-
-    public Voltage negate()
-    {
-        final double value = this.getValue();
-        final Voltage result = (value == 0 ? this : new Voltage(-value, this.getUnits()));
-
-        PostCondition.assertNotNull(result, "result");
-
-        return result;
-    }
-
-    public Voltage plus(Voltage rhs)
-    {
-        PreCondition.assertNotNull(rhs, "rhs");
-
-        final Voltage result = (rhs.getValue() == 0 ? this : new Voltage(this.getValue() + rhs.convertTo(this.getUnits()).getValue(), this.getUnits()));
-
-        PostCondition.assertNotNull(result, "result");
-        PostCondition.assertEqual(this.getUnits(), result.getUnits(), "result.getUnits()");
-
-        return result;
-    }
-
-    /**
-     * Get the difference between this Voltage and the provided Voltage.
-     * @param rhs The Voltage to subtract from this Voltage.
-     * @return The difference between this Voltage and the provided Voltage.
-     */
-    public Voltage minus(Voltage rhs)
-    {
-        PreCondition.assertNotNull(rhs, "rhs");
-
-        final Voltage result = (rhs.getValue() == 0 ? this : new Voltage(this.getValue() - rhs.convertTo(this.getUnits()).getValue(), this.getUnits()));
-
-        PostCondition.assertNotNull(result, "result");
-        PostCondition.assertEqual(this.getUnits(), result.getUnits(), "result.getUnits()");
-
-        return result;
-    }
-
-    public Voltage times(double value)
-    {
-        final Voltage result = (value == 1 ? this : new Voltage(this.getValue() * value, this.getUnits()));
-
-        PostCondition.assertNotNull(result, "result");
-        PostCondition.assertEqual(this.getUnits(), result.getUnits(), "result.getUnits()");
-
-        return result;
-    }
-
-    public Voltage dividedBy(double rhs)
-    {
-        PreCondition.assertNotEqual(0.0, rhs, "rhs");
-
-        final Voltage result = (rhs == 1 ? this : new Voltage(this.getValue() / rhs, this.getUnits()));
-
-        PostCondition.assertNotNull(result, "result");
-
-        return result;
-    }
-
-    public double dividedBy(Voltage rhs)
-    {
-        PreCondition.assertNotNull(rhs, "rhs");
-        PreCondition.assertNotEqual(0, rhs.getValue(), "rhs.getValue()");
-
-        final Voltage convertedRhs = rhs.convertTo(this.getUnits());
-        final double result = this.getValue() / convertedRhs.getValue();
-
-        return result;
-    }
-
-    public Voltage round()
-    {
-        final double roundedValue = Math.round(this.getValue());
-        return roundedValue == this.getValue() ? this : new Voltage(roundedValue, this.getUnits());
-    }
-
-    public Voltage round(Voltage scale)
-    {
-        PreCondition.assertNotNull(scale, "scale");
-        PreCondition.assertNotEqual(0, scale.getValue(), "scale.getValue()");
-
-        final Voltage convertedLhs = this.convertTo(scale.getUnits());
-        final double roundedValue = Math.round(convertedLhs.getValue(), scale.getValue());
-        final Voltage result = convertedLhs.getValue() == roundedValue ? convertedLhs : new Voltage(roundedValue, scale.getUnits());
-
-        PostCondition.assertNotNull(result, "result");
-        PostCondition.assertEqual(scale.getUnits(), result.getUnits(), "result.getUnits()");
-
-        return result;
-    }
-
-    public Voltage round(double scale)
-    {
-        PreCondition.assertNotEqual(0, scale, "scale");
-
-        final double roundedValue = Math.round(this.getValue(), scale);
-        final Voltage result = (this.getValue() == roundedValue ? this : new Voltage(roundedValue, this.getUnits()));
-
-        PostCondition.assertNotNull(result, "result");
-        PostCondition.assertEqual(getUnits(), result.getUnits(), "result.getUnits()");
-
-        return result;
-    }
-
-    @Override
-    public String toString()
-    {
-        return this.getValue() + " " + this.getUnits();
-    }
-
-    public String toString(String format)
-    {
-        PreCondition.assertNotNull(format, "format");
-
-        return new java.text.DecimalFormat(format).format(this.getValue()) + " " + this.getUnits();
-    }
-
-    @Override
-    public boolean equals(Object value)
-    {
-        return value instanceof Voltage && this.equals((Voltage)value);
-    }
-
-    public boolean equals(Voltage rhs)
-    {
-        return rhs != null && rhs.convertTo(this.getUnits()).getValue() == this.getValue();
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Doubles.hashCode(this.toVolts().getValue());
-    }
-
-    @Override
-    public Comparison compareWith(Voltage value)
-    {
-        return this.compareTo(value, Voltage.zero);
-    }
-
-    @Override
-    public Comparison compareTo(Voltage value, Voltage marginOfError)
-    {
-        PreCondition.assertNotNull(marginOfError, "marginOfError");
-
-        Comparison result;
-        if (value == null)
-        {
-            result = Comparison.GreaterThan;
-        }
-        else
-        {
-            final VoltageUnit units = this.getUnits();
-            result = Comparison.create(this.getValue() - value.convertTo(units).getValue(), marginOfError.convertTo(units).getValue());
-        }
-
-        PostCondition.assertNotNull(result, "result");
-
-        return result;
     }
 }

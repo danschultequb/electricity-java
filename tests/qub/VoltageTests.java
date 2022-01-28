@@ -72,7 +72,7 @@ public interface VoltageTests
                 {
                     final Voltage value = Voltage.volts(3);
                     test.assertThrows(() -> value.convertTo(null),
-                        new PreConditionFailure("destinationUnits cannot be null."));
+                        new PreConditionFailure("units cannot be null."));
                 });
 
                 final Action3<Voltage,VoltageUnit,Double> convertToTest = (Voltage value, VoltageUnit expectedUnits, Double expectedValue) ->
