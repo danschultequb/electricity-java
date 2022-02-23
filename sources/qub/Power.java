@@ -67,18 +67,13 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
     {
         PreCondition.assertNotNull(units, "units");
 
-        double result = 0;
-
+        Double result = null;
         switch (this.getUnits())
         {
             case Nanowatts:
             {
                 switch (units)
                 {
-                    case Nanowatts:
-                        result = 1;
-                        break;
-
                     case Microwatts:
                         result = MetricScale.nanoToMicro;
                         break;
@@ -110,10 +105,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                     case Petawatts:
                         result = MetricScale.nanoToPeta;
                         break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
-                        break;
                 }
             }
             break;
@@ -124,10 +115,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                 {
                     case Nanowatts:
                         result = MetricScale.microToNano;
-                        break;
-
-                    case Microwatts:
-                        result = 1;
                         break;
 
                     case Milliwatts:
@@ -157,10 +144,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                     case Petawatts:
                         result = MetricScale.microToPeta;
                         break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
-                        break;
                 }
             }
             break;
@@ -175,10 +158,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
 
                     case Microwatts:
                         result = MetricScale.milliToMicro;
-                        break;
-
-                    case Milliwatts:
-                        result = 1;
                         break;
 
                     case Watts:
@@ -204,10 +183,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                     case Petawatts:
                         result = MetricScale.milliToPeta;
                         break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
-                        break;
                 }
             }
             break;
@@ -228,10 +203,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                         result = MetricScale.uniToMilli;
                         break;
 
-                    case Watts:
-                        result = 1;
-                        break;
-
                     case Kilowatts:
                         result = MetricScale.uniToKilo;
                         break;
@@ -250,10 +221,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
 
                     case Petawatts:
                         result = MetricScale.uniToPeta;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
             }
@@ -279,10 +246,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                         result = MetricScale.kiloToUni;
                         break;
 
-                    case Kilowatts:
-                        result = 1;
-                        break;
-
                     case Megawatts:
                         result = MetricScale.kiloToMega;
                         break;
@@ -297,10 +260,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
 
                     case Petawatts:
                         result = MetricScale.kiloToPeta;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
             }
@@ -330,10 +289,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                         result = MetricScale.megaToKilo;
                         break;
 
-                    case Megawatts:
-                        result = 1;
-                        break;
-
                     case Gigawatts:
                         result = MetricScale.megaToGiga;
                         break;
@@ -344,10 +299,6 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
 
                     case Petawatts:
                         result = MetricScale.megaToPeta;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
             }
@@ -381,20 +332,12 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                         result = MetricScale.gigaToMega;
                         break;
 
-                    case Gigawatts:
-                        result = 1;
-                        break;
-
                     case Terawatts:
                         result = MetricScale.gigaToTera;
                         break;
 
                     case Petawatts:
                         result = MetricScale.gigaToPeta;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
             }
@@ -432,16 +375,8 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                         result = MetricScale.teraToGiga;
                         break;
 
-                    case Terawatts:
-                        result = 1;
-                        break;
-
                     case Petawatts:
                         result = MetricScale.teraToPeta;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
             }
@@ -482,23 +417,12 @@ public class Power extends MeasurableValueBase<PowerUnit, Power>
                     case Terawatts:
                         result = MetricScale.petaToTera;
                         break;
-
-                    case Petawatts:
-                        result = 1;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
-                        break;
                 }
             }
             break;
-
-            default:
-                MeasurableValueBase.throwUnrecognizedUnitsException(this.getUnits());
-                break;
         }
 
+        PostCondition.assertTrue(result != null, "No conversion found from " + this.getUnits() + " to " + units + ".");
         PostCondition.assertGreaterThan(result, 0, "result");
 
         return result;

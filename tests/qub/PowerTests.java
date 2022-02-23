@@ -6,6 +6,14 @@ public interface PowerTests
     {
         runner.testGroup(Power.class, () ->
         {
+            runner.test("zero", (Test test) ->
+            {
+                final Power zero = Power.zero;
+                test.assertNotNull(zero);
+                test.assertEqual(0, zero.getValue());
+                test.assertEqual(PowerUnit.Watts, zero.getUnits());
+            });
+
             runner.testGroup("nanowatts(double)", () ->
             {
                 final Action1<Double> nanowatts = (Double value) ->
@@ -317,364 +325,111 @@ public interface PowerTests
                 toWattsTest.run(Power.terawatts(8),    8000000000000.0);
                 toWattsTest.run(Power.petawatts(9), 9000000000000000.0);
             });
-//
-//            runner.testGroup("negate()", () ->
-//            {
-//                runner.test("with -1 Watts", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.watts(-1).negate(), 1, PowerUnit.Watts);
-//                });
-//
-//                runner.test("with 0 milliwatts", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(0).negate(), 0, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with 10 Megawatts", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.megawatts(10).negate(), -10, PowerUnit.Megawatts);
-//                });
-//            });
-//
-//            runner.testGroup("plus(Power)", () ->
-//            {
-//                runner.test("with null", (Test test) ->
-//                {
-//                    test.assertThrows(() -> Power.watts(5).plus(null),
-//                        new PreConditionFailure("rhs cannot be null."));
-//                });
-//
-//                runner.test("with negative", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).plus(Power.watts(-5)), -4997, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with zero", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).plus(Power.watts(0)), 3, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with positive", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).plus(Power.watts(2)), 2003, PowerUnit.Milliwatts);
-//                });
-//            });
-//
-//            runner.testGroup("minus(Power)", () ->
-//            {
-//                runner.test("with null", (Test test) ->
-//                {
-//                    test.assertThrows(() -> Power.watts(5).minus(null),
-//                        new PreConditionFailure("rhs cannot be null."));
-//                });
-//
-//                runner.test("with negative", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).minus(Power.watts(-5)), 5003, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with zero", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).minus(Power.watts(0)), 3, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with positive", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).minus(Power.watts(2)), -1997, PowerUnit.Milliwatts);
-//                });
-//            });
-//
-//            runner.testGroup("times(double)", () ->
-//            {
-//                runner.test("with -5", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).times(-5), -15, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with -1", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).times(-1), -3, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with 0", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).times(0), 0, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with 1", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).times(1), 3, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with 12", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).times(4), 12, PowerUnit.Milliwatts);
-//                });
-//            });
-//
-//            runner.testGroup("dividedBy(double)", () ->
-//            {
-//                runner.test("with -5", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).dividedBy(-5), -0.6, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with -1", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).dividedBy(-1), -3, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with 0", (Test test) ->
-//                {
-//                    test.assertThrows(() -> Power.milliwatts(3).dividedBy(0),
-//                        new PreConditionFailure("rhs (0.0) must not be 0.0."));
-//                });
-//
-//                runner.test("with 1", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).dividedBy(1), 3, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with 4", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(3).dividedBy(4), 0.75, PowerUnit.Milliwatts);
-//                });
-//            });
-//
-//            runner.testGroup("dividedBy(Power)", () ->
-//            {
-//                runner.test("with -5", (Test test) ->
-//                {
-//                    test.assertEqual(-0.6, Power.milliwatts(3).dividedBy(Power.milliwatts(-5)));
-//                });
-//
-//                runner.test("with -1", (Test test) ->
-//                {
-//                    test.assertEqual(-3, Power.milliwatts(3).dividedBy(Power.milliwatts(-1)));
-//                });
-//
-//                runner.test("with 0", (Test test) ->
-//                {
-//                    test.assertThrows(() -> Power.milliwatts(3).dividedBy(Power.watts(0)),
-//                        new PreConditionFailure("rhs.getValue() (0.0) must not be 0.0."));
-//                });
-//
-//                runner.test("with 1", (Test test) ->
-//                {
-//                    test.assertEqual(3, Power.milliwatts(3).dividedBy(Power.milliwatts(1)));
-//                });
-//
-//                runner.test("with 4", (Test test) ->
-//                {
-//                    test.assertEqual(0.75, Power.milliwatts(3).dividedBy(Power.milliwatts(4)));
-//                });
-//            });
-//
-//            runner.testGroup("round()", () ->
-//            {
-//                runner.test("with 0 milliwatts", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(0).round(), 0, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with 1.4999 Kilowatts", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.kilowatts(1.4999).round(), 1, PowerUnit.Kilowatts);
-//                });
-//
-//                runner.test("with 1.5 Megawatts", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.megawatts(1.5).round(), 2, PowerUnit.Megawatts);
-//                });
-//
-//                runner.test("with 2 Watts", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.watts(2).round(), 2, PowerUnit.Watts);
-//                });
-//            });
-//
-//            runner.testGroup("round(Power)", () ->
-//            {
-//                runner.test("with null", (Test test) ->
-//                {
-//                    test.assertThrows(() -> Power.watts(5).round(null),
-//                        new PreConditionFailure("scale cannot be null."));
-//                });
-//
-//                runner.test("with 0 milliwatts and 0 Volt scale", (Test test) ->
-//                {
-//                    test.assertThrows(() -> Power.milliwatts(0).round(Power.watts(0)),
-//                        new PreConditionFailure("scale.getValue() (0.0) must not be 0.0."));
-//                });
-//
-//                runner.test("with 0 milliwatts and 1 Volt scale", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(0).round(Power.watts(1)), 0, PowerUnit.Watts);
-//                });
-//
-//                runner.test("with 1 Volt and 3 Millivolt scale", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.watts(1).round(Power.milliwatts(3)), 999, PowerUnit.Milliwatts);
-//                });
-//            });
-//
-//            runner.testGroup("round(double)", () ->
-//            {
-//                runner.test("with 0", (Test test) ->
-//                {
-//                    test.assertThrows(() -> Power.watts(5).round(0),
-//                        new PreConditionFailure("scale (0.0) must not be 0.0."));
-//                });
-//
-//                runner.test("with 0 milliwatts and 1 scale", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.milliwatts(0).round(1), 0, PowerUnit.Milliwatts);
-//                });
-//
-//                runner.test("with 1 Volt and 3 scale", (Test test) ->
-//                {
-//                    PowerTests.assertPower(test, Power.watts(1).round(3), 0, PowerUnit.Watts);
-//                });
-//            });
-//
-//            runner.testGroup("toString(String)", () ->
-//            {
-//                runner.test("with null", (Test test) ->
-//                {
-//                    test.assertThrows(() -> Power.watts(1.23).toString(null),
-//                        new PreConditionFailure("format cannot be null."));
-//                });
-//
-//                runner.test("with " + Strings.escapeAndQuote(""), (Test test) ->
-//                {
-//                    test.assertEqual("1.23 Watts", Power.watts(1.23).toString(""));
-//                });
-//
-//                runner.test("with " + Strings.escapeAndQuote("0"), (Test test) ->
-//                {
-//                    test.assertEqual("1 Watts", Power.watts(1.23).toString("0"));
-//                });
-//
-//                runner.test("with " + Strings.escapeAndQuote("00.0"), (Test test) ->
-//                {
-//                    test.assertEqual("01.2 Watts", Power.watts(1.23).toString("00.0"));
-//                });
-//            });
-//
-//            runner.testGroup("equals(Object)", () ->
-//            {
-//                runner.test("with null", (Test test) ->
-//                {
-//                    test.assertFalse(Power.watts(1).equals((Object)null));
-//                });
-//
-//                runner.test("with String", (Test test) ->
-//                {
-//                    test.assertFalse(Power.watts(1).equals((Object)"Power"));
-//                });
-//
-//                runner.test("with same", (Test test) ->
-//                {
-//                    final Power Power = Power.watts(2);
-//                    test.assertTrue(Power.equals((Object)Power));
-//                });
-//
-//                runner.test("with equal value and units", (Test test) ->
-//                {
-//                    test.assertTrue(Power.watts(1).equals((Object)Power.watts(1)));
-//                });
-//
-//                runner.test("with equal converted value and units", (Test test) ->
-//                {
-//                    test.assertTrue(Power.watts(1).equals((Object)Power.milliwatts(1000)));
-//                });
-//
-//                runner.test("with equal value but different units", (Test test) ->
-//                {
-//                    test.assertFalse(Power.watts(1).equals((Object)Power.kilowatts(1)));
-//                });
-//
-//                runner.test("with different value but equal units", (Test test) ->
-//                {
-//                    test.assertFalse(Power.watts(1).equals((Object)Power.watts(2)));
-//                });
-//            });
-//
-//            runner.testGroup("equals(Power)", () ->
-//            {
-//                runner.test("with null", (Test test) ->
-//                {
-//                    test.assertFalse(Power.watts(1).equals((Power)null));
-//                });
-//
-//                runner.test("with same", (Test test) ->
-//                {
-//                    final Power Power = Power.watts(2);
-//                    test.assertTrue(Power.equals(Power));
-//                });
-//
-//                runner.test("with equal value and units", (Test test) ->
-//                {
-//                    test.assertTrue(Power.watts(1).equals(Power.watts(1)));
-//                });
-//
-//                runner.test("with equal converted value and units", (Test test) ->
-//                {
-//                    test.assertTrue(Power.watts(1).equals(Power.milliwatts(1000)));
-//                });
-//
-//                runner.test("with equal value but different units", (Test test) ->
-//                {
-//                    test.assertFalse(Power.watts(1).equals(Power.kilowatts(1)));
-//                });
-//
-//                runner.test("with different value but equal units", (Test test) ->
-//                {
-//                    test.assertFalse(Power.watts(1).equals(Power.watts(2)));
-//                });
-//            });
-//
-//            runner.testGroup("hashCode()", () ->
-//            {
-//                runner.test("with same", (Test test) ->
-//                {
-//                    final Power Power = Power.milliwatts(25);
-//                    test.assertEqual(Power.hashCode(), Power.hashCode());
-//                });
-//
-//                runner.test("with equal", (Test test) ->
-//                {
-//                    test.assertEqual(Power.watts(10).hashCode(), Power.watts(10).hashCode());
-//                });
-//
-//                runner.test("with converted equal", (Test test) ->
-//                {
-//                    test.assertEqual(Power.watts(500).hashCode(), Power.kilowatts(0.5).hashCode());
-//                });
-//
-//                runner.test("with different", (Test test) ->
-//                {
-//                    test.assertNotEqual(Power.milliwatts(23).hashCode(), Power.watts(1).hashCode());
-//                });
-//            });
-//
-//            runner.testGroup("compareTo(Power)", () ->
-//            {
-//                runner.test("with null", (Test test) ->
-//                {
-//                    test.assertEqual(Comparison.GreaterThan, Power.milliwatts(1).compareWith(null));
-//                });
-//
-//                runner.test("with less than with equal units", (Test test) ->
-//                {
-//                    test.assertEqual(Comparison.LessThan, Power.watts(1).compareWith(Power.watts(2)));
-//                });
-//
-//                runner.test("with less than with different units", (Test test) ->
-//                {
-//                    test.assertEqual(Comparison.LessThan, Power.milliwatts(10).compareWith(Power.watts(1)));
-//                });
-//            });
+
+            runner.testGroup("toKilowatts()", () ->
+            {
+                final Action2<Power,Double> toKilowattsTest = (Power power, Double expected) ->
+                {
+                    runner.test("with " + power, (Test test) ->
+                    {
+                        PowerTests.assertPower(test, power.toKilowatts(), expected, PowerUnit.Kilowatts);
+                    });
+                };
+
+                toKilowattsTest.run(Power.nanowatts(1),             0.000000000001);
+                toKilowattsTest.run(Power.microwatts(2),            0.000000002);
+                toKilowattsTest.run(Power.milliwatts(3),            0.000003);
+                toKilowattsTest.run(Power.watts(4),                 0.004);
+                toKilowattsTest.run(Power.kilowatts(5),             5.0);
+                toKilowattsTest.run(Power.megawatts(6),          6000.0);
+                toKilowattsTest.run(Power.gigawatts(7),       7000000.0);
+                toKilowattsTest.run(Power.terawatts(8),    8000000000.0);
+                toKilowattsTest.run(Power.petawatts(9), 9000000000000.0);
+            });
+
+            runner.testGroup("toMegawatts()", () ->
+            {
+                final Action2<Power,Double> toMegawattsTest = (Power power, Double expected) ->
+                {
+                    runner.test("with " + power, (Test test) ->
+                    {
+                        PowerTests.assertPower(test, power.toMegawatts(), expected, PowerUnit.Megawatts);
+                    });
+                };
+
+                toMegawattsTest.run(Power.nanowatts(1),          0.000000000000001);
+                toMegawattsTest.run(Power.microwatts(2),         0.000000000002);
+                toMegawattsTest.run(Power.milliwatts(3),         0.0000000030000000000000004);
+                toMegawattsTest.run(Power.watts(4),              0.000004);
+                toMegawattsTest.run(Power.kilowatts(5),          0.005);
+                toMegawattsTest.run(Power.megawatts(6),          6.0);
+                toMegawattsTest.run(Power.gigawatts(7),       7000.0);
+                toMegawattsTest.run(Power.terawatts(8),    8000000.0);
+                toMegawattsTest.run(Power.petawatts(9), 9000000000.0);
+            });
+
+            runner.testGroup("toGigawatts()", () ->
+            {
+                final Action2<Power,Double> toGigawattsTest = (Power power, Double expected) ->
+                {
+                    runner.test("with " + power, (Test test) ->
+                    {
+                        PowerTests.assertPower(test, power.toGigawatts(), expected, PowerUnit.Gigawatts);
+                    });
+                };
+
+                toGigawattsTest.run(Power.nanowatts(1),       0.000000000000000001);
+                toGigawattsTest.run(Power.microwatts(2),      0.000000000000002);
+                toGigawattsTest.run(Power.milliwatts(3),      0.000000000003);
+                toGigawattsTest.run(Power.watts(4),           0.000000004);
+                toGigawattsTest.run(Power.kilowatts(5),       0.0000049999999999999996);
+                toGigawattsTest.run(Power.megawatts(6),       0.006);
+                toGigawattsTest.run(Power.gigawatts(7),       7.0);
+                toGigawattsTest.run(Power.terawatts(8),    8000.0);
+                toGigawattsTest.run(Power.petawatts(9), 9000000.0);
+            });
+
+            runner.testGroup("toTerawatts()", () ->
+            {
+                final Action2<Power,Double> toTerawattsTest = (Power power, Double expected) ->
+                {
+                    runner.test("with " + power, (Test test) ->
+                    {
+                        PowerTests.assertPower(test, power.toTerawatts(), expected, PowerUnit.Terawatts);
+                    });
+                };
+
+                toTerawattsTest.run(Power.nanowatts(1),    0.000000000000000000001);
+                toTerawattsTest.run(Power.microwatts(2),   0.000000000000000002);
+                toTerawattsTest.run(Power.milliwatts(3),   0.0000000000000030000000000000002);
+                toTerawattsTest.run(Power.watts(4),        0.000000000004);
+                toTerawattsTest.run(Power.kilowatts(5),    0.000000005);
+                toTerawattsTest.run(Power.megawatts(6),    0.000006);
+                toTerawattsTest.run(Power.gigawatts(7),    0.007);
+                toTerawattsTest.run(Power.terawatts(8),    8.0);
+                toTerawattsTest.run(Power.petawatts(9), 9000.0);
+            });
+
+            runner.testGroup("toPetawatts()", () ->
+            {
+                final Action2<Power,Double> toPetawattsTest = (Power power, Double expected) ->
+                {
+                    runner.test("with " + power, (Test test) ->
+                    {
+                        PowerTests.assertPower(test, power.toPetawatts(), expected, PowerUnit.Petawatts);
+                    });
+                };
+
+                toPetawattsTest.run(Power.nanowatts(1),  0.000000000000000000000001);
+                toPetawattsTest.run(Power.microwatts(2), 0.000000000000000000002);
+                toPetawattsTest.run(Power.milliwatts(3), 0.0000000000000000030000000000000002);
+                toPetawattsTest.run(Power.watts(4),      0.000000000000004);
+                toPetawattsTest.run(Power.kilowatts(5),  0.000000000005);
+                toPetawattsTest.run(Power.megawatts(6),  0.000000006000000000000001);
+                toPetawattsTest.run(Power.gigawatts(7),  0.000007);
+                toPetawattsTest.run(Power.terawatts(8),  0.008);
+                toPetawattsTest.run(Power.petawatts(9),  9.0);
+            });
         });
     }
 

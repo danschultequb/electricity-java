@@ -6,6 +6,14 @@ public interface VoltageTests
     {
         runner.testGroup(Voltage.class, () ->
         {
+            runner.test("zero", (Test test) ->
+            {
+                final Voltage zero = Voltage.zero;
+                test.assertNotNull(zero);
+                test.assertEqual(0, zero.getValue());
+                test.assertEqual(VoltageUnit.Volts, zero.getUnits());
+            });
+
             runner.testGroup("millivolts(double)", () ->
             {
                 final Action1<Double> millivoltsTest = (Double value) ->

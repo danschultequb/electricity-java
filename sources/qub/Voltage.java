@@ -42,7 +42,7 @@ public class Voltage extends MeasurableValueBase<VoltageUnit, Voltage>
     {
         PreCondition.assertNotNull(units, "units");
 
-        double result = 0;
+        Double result = null;
 
         switch (this.getUnits())
         {
@@ -50,10 +50,6 @@ public class Voltage extends MeasurableValueBase<VoltageUnit, Voltage>
             {
                 switch (units)
                 {
-                    case Millivolts:
-                        result = 1;
-                        break;
-
                     case Volts:
                         result = MetricScale.milliToUni;
                         break;
@@ -64,10 +60,6 @@ public class Voltage extends MeasurableValueBase<VoltageUnit, Voltage>
 
                     case Megavolts:
                         result = MetricScale.milliToMega;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
             }
@@ -81,20 +73,12 @@ public class Voltage extends MeasurableValueBase<VoltageUnit, Voltage>
                         result = MetricScale.uniToMilli;
                         break;
 
-                    case Volts:
-                        result = 1;
-                        break;
-
                     case Kilovolts:
                         result = MetricScale.uniToKilo;
                         break;
 
                     case Megavolts:
                         result = MetricScale.uniToMega;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
             }
@@ -112,16 +96,8 @@ public class Voltage extends MeasurableValueBase<VoltageUnit, Voltage>
                         result = MetricScale.kiloToUni;
                         break;
 
-                    case Kilovolts:
-                        result = 1;
-                        break;
-
                     case Megavolts:
                         result = MetricScale.kiloToMega;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
                         break;
                 }
             }
@@ -142,23 +118,12 @@ public class Voltage extends MeasurableValueBase<VoltageUnit, Voltage>
                     case Kilovolts:
                         result = MetricScale.megaToKilo;
                         break;
-
-                    case Megavolts:
-                        result = 1;
-                        break;
-
-                    default:
-                        MeasurableValueBase.throwUnrecognizedUnitsException(units);
-                        break;
                 }
             }
             break;
-
-            default:
-                MeasurableValueBase.throwUnrecognizedUnitsException(this.getUnits());
-                break;
         }
 
+        PostCondition.assertTrue(result != null, "No conversion found from " + this.getUnits() + " to " + units + ".");
         PostCondition.assertGreaterThan(result, 0, "result");
 
         return result;
